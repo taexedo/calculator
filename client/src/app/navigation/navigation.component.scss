@@ -1,0 +1,23 @@
+.navigation {
+  height: 100%;
+  background-color: #3949AB;
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
+  gap: 20px;
+  z-index: 1000;
+  text-transform: capitalize;
+  a {
+    text-decoration: none;
+    font-size: 20px;
+    color: #1E88E5;
+    transition: color 0.3s ease-in-out;
+    &:hover {
+      color: #FFC107;
+    }
+    &.active {
+      color: #FFC107;
+      font-weight: bold;
+    }
+  }
+}

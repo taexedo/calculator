@@ -1,0 +1,15 @@
+<div class="sidebar" [class.active]="isOpenHistorySidebar" >
+  <div [ngClass]="{'loading-sidebar': isLoading}">
+  <div class="header">
+    <h1>History</h1>
+    <button (click)="onClose()" class="close-button"><i class="fa fa-window-close"></i></button>
+  </div>
+  <p *ngIf="isError" class="data-problem">Error loading history</p>
+  <p *ngIf="!isLoading && historyList.length === 0 && !isError" class="data-problem">No history yet</p>
+  <div class="history-list" *ngIf="historyList.length !== 0 && !isError">
+    <div *ngFor="let historyObject of historyList">
+      <p>{{historyObject.expression}} = {{historyObject.result}}</p>
+    </div>
+  </div>
+  </div>
+</div>

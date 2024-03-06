@@ -1,0 +1,52 @@
+
+header {
+  height: 80px;
+}
+section {
+  position: relative;
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+html, body {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: "Kode Mono", monospace;
+  background-color: #F5F5F5;
+  button {
+    font-family: "Kode Mono", monospace;
+    font-weight: 700;
+  }
+  p {
+    color: #424242
+  }
+  h1 {
+    color: #212121;
+  }
+}
+
+
+
+@keyframes outerPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
+  }
+}
+
+.outer-pulsing {
+  animation: outerPulse 2s infinite ease-in-out;
+}
+
+
+
+
+

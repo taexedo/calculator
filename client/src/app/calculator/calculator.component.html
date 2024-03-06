@@ -1,0 +1,24 @@
+  <div class="container">
+    <div class="calculator-body">
+      <div class="calculator-display-container" [ngClass]="{'outer-pulsing': isLoading}">
+        <p *ngIf="isError" class="error">ERROR!</p>
+        <p class="expression-input" *ngIf="!expressionResult && !isError">{{ expression }}</p>
+        <div *ngIf="expressionResult && !isError" class="result-container">
+          <p class="expression-result">{{ expression }} =</p>
+          <p class="result">{{ expressionResult }}</p>
+        </div>
+      </div>
+
+      <div class="button-container">
+        <button *ngFor="let button of buttons" (click)="button.action(button.buttonText)" [class]="button.class || ''"
+                [disabled]="isLoading">
+          <span *ngIf="button.icon" [class]="button.icon"></span>
+          <span *ngIf="!button.icon">{{ button.buttonText }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <app-history [isOpenHistorySidebar]='isOpenHistorySidebar'
+               (toggleHistorySidebar)="toggleHistorySidebar()"></app-history>
+  <app-toast [isError]="triggerToastMessageFlag" [errorText]="'Calculation error'"></app-toast>
+
