@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Delete, Get } from '@nestjs/common';
 import { HistoryService } from './history.service';
 
 @Controller('history')
@@ -7,5 +7,10 @@ export class HistoryController {
   @Get()
   getHistory() {
     return this.historyService.getHistory();
+  }
+
+  @Delete()
+  deleteAll() {
+    return this.historyService.deleteHistory();
   }
 }

@@ -14,6 +14,10 @@ export class HistoryService {
     return this.historyModule.find();
   }
 
+  deleteHistory() {
+    return this.historyModule.deleteMany();
+  }
+
   createHistory(createHistoryDto: CreateHistoryDto) {
     const newHistory = new this.historyModule(createHistoryDto);
     return newHistory.save();

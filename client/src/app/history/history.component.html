@@ -1,15 +1,20 @@
 <div class="sidebar" [class.active]="isOpenHistorySidebar" >
   <div [ngClass]="{'loading-sidebar': isLoading}">
-  <div class="header">
-    <h1>History</h1>
-    <button (click)="onClose()" class="close-button"><i class="fa fa-window-close"></i></button>
+  <div class="header-container">
+    <div class="header">
+      <h1>History</h1>
+      <button (click)="onClose()" class="close-button"><i class="fa fa-window-close"></i></button>
+    </div>
+
+    <button (click)="deleteHistory()" class="delete-button"  [disabled]="historyList.length === 0">Delete All</button>
   </div>
-  <p *ngIf="isError" class="data-problem">Error loading history</p>
+  <p *ngIf="!isLoading && isError" class="data-problem">Error loading history</p>
   <p *ngIf="!isLoading && historyList.length === 0 && !isError" class="data-problem">No history yet</p>
   <div class="history-list" *ngIf="historyList.length !== 0 && !isError">
     <div *ngFor="let historyObject of historyList">
-      <p>{{historyObject.expression}} = {{historyObject.result}}</p>
+      <p (click)="onHistoryClick(historyObject.expression, historyObject.result)">{{historyObject.expression}} = {{historyObject.result}}</p>
     </div>
   </div>
   </div>
 </div>
+<app-toast [isError]="triggerToastMessageFlag" [errorText]="errorText"></app-toast>

@@ -10,16 +10,22 @@
   box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
 
-  .header {
-    display: flex;
+  .header-container {
     position: sticky;
     top: 0;
-    justify-content: space-between;
-    align-items: center;
     background-color: #CFD8DC;
     padding: 20px;
+    .header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .delete-button {
+      margin-top: 10px;
+      width: 100%;
+    }
   }
-
   .data-problem {
     margin-top: 30px;
     text-align: center;
@@ -31,6 +37,7 @@
     padding: 10px;
 
     p {
+      cursor: pointer;
       background-color: #dce3e6;
       margin-bottom: 6px;
       padding: 4px;

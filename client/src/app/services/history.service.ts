@@ -13,4 +13,7 @@ export class HistoryService {
   getHistory(): Observable<HistoryModel[]> {
     return this.http.get<HistoryModel[]>(this.apiUrl);
   }
+  deleteAllHistory(): Observable<HistoryModel[]> {
+    return this.http.delete<HistoryModel[]>(this.apiUrl);
+  }
 }

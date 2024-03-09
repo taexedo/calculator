@@ -23,7 +23,13 @@ export class CalculatorComponent {
   isLoading: boolean = false;
   triggerToastMessageFlag: boolean = false;
 
+  currentNumber: string = '0';
+  chosenOperation: string = '';
+  builtExpression: string = '';
+  justAddedToExpression: boolean = false;
+
   @ViewChild(HistoryComponent) historyComponent!: HistoryComponent
+
   constructor(private CalculatorService: CalculatorService) {
     this.buttons = populateButtons({
       addNumber: this.addNumber,
@@ -36,82 +42,95 @@ export class CalculatorComponent {
     })
   }
 
-  addNumber = (number: string) => {
-
-    this.cleanError()
-    this.resetExpressionResult()
-    if(!this.isSafeToInput()){
-      return;
-    }
-    if(this.expression === '0'){
-      this.expression = number
-      return;
-    }
-
-    this.expression += number
+  toggleHistorySidebar = () => {
+    this.isOpenHistorySidebar = !this.isOpenHistorySidebar
   }
 
-  addOperation = (specialCharacter: string) => {
-
-    const isOperationAdded = CALCULATOR_OPERATIONS_REGEX.test(this.expression)
-    if(isOperationAdded){
-      const lastTreeChars = this.expression.slice(-3)
-      if(CALCULATOR_OPERATIONS_REGEX.test(lastTreeChars) && lastTreeChars !== ` ${specialCharacter} `){
-        this.expression = this.expression.slice(0, -3) + ` ${specialCharacter} `
-      }
+  addNumber = (number: string) => {
+    if (this.expressionResult) {
+      this.resetResultsVars()
+    }
+    if (this.currentNumber === '0' || this.justAddedToExpression) {
+      this.currentNumber = number
+      this.justAddedToExpression = false;
       return;
     }
-    this.expression += ` ${specialCharacter} `
+    if (!this.isSafeToInput()) {
+      return;
+    }
+    this.currentNumber += number
+  }
 
+  addOperation = (operator: string) => {
+    if (this.isError) {
+      return;
+    }
+
+    if (!this.chosenOperation) {
+      this.justAddedToExpression = true;
+    }
+    if (!this.builtExpression) {
+      if (this.expressionResult) {
+        this.currentNumber = this.expressionResult;
+        this.builtExpression = this.expressionResult;
+        this.resetResultsVars()
+      } else {
+        this.builtExpression = this.currentNumber;
+      }
+    }
+    this.chosenOperation = operator
   }
 
   addFloatingPoint = () => {
-    if(!this.isSafeToInput() || this.expressionResult || this.isError){
+    if (this.currentNumber.length > 15 || this.isError) {
       return;
     }
-    const isLastCharNumber = /\d$/.test(this.expression);
-    if(isLastCharNumber) {
-      const expressionArray = this.expression.split(" ")
-      if(!expressionArray[expressionArray.length - 1].includes(".")){
-        this.expression += '.'
-      }
+    if (this.expressionResult) {
+      this.currentNumber = '0'
+      this.resetResultsVars()
     }
-  }
 
-  isSafeToInput (){
-    const expressionArray = this.expression.split(" ")
-    console.log("expressionArray", expressionArray)
-    console.log("expressionArray[expressionArray.length - 1].length", expressionArray[expressionArray.length - 1].length)
-    return expressionArray[expressionArray.length - 1].length !== 12;
+    if (!this.currentNumber.includes(".")) {
+      this.currentNumber += '.'
+    }
   }
 
   backspaceFunction = () => {
-    if(this.expressionResult || this.isError){
+    if (this.justAddedToExpression || this.expressionResult || this.isError) {
       return;
     }
-    if(this.expression.length === 1){
-      if(this.expression !== '0'){
-        this.expression = '0'
+    if (this.currentNumber.length === 1) {
+      if (this.currentNumber !== '0') {
+        this.currentNumber = '0'
         return;
       }
       return;
     }
-    this.expression = this.expression.slice(0, -1);
+    this.currentNumber = this.currentNumber.slice(0, -1);
   }
 
-  calculateFunction = () =>  {
-    if(this.expressionResult || this.isError){
+  isSafeToInput() {
+    return this.currentNumber.length <= 16;
+  }
+
+
+  calculateFunction = () => {
+    if (this.expressionResult || this.isError) {
       return;
     }
+    this.expression = `${this.builtExpression} ${this.chosenOperation} ${this.currentNumber}`
     const isValidExpression = EXPRESSION_VALIDATOR.test(this.expression)
-    if(isValidExpression) {
+    if (isValidExpression) {
       this.calculateExpression()
     }
   }
 
   calculateExpression = () => {
     this.isLoading = true;
-    this.CalculatorService.createCalculation({expression: this.expression}).subscribe((result: {result: string}) => {
+    this.CalculatorService.createCalculation({expression: this.expression}).subscribe((result: {
+      result: string
+    }) => {
+      this.resetFunction();
       this.isLoading = false;
       this.expressionResult = result.result
       this.historyComponent.getHistoryData()
@@ -121,31 +140,9 @@ export class CalculatorComponent {
     })
   }
 
-  clearFunction = () =>  {
-    this.cleanError()
-    if(this.expression !== '0') {
-      if(this.expressionResult){
-        this.expressionResult = '';
-      }
-      this.expression = '0'
-      return;
-    }
-  }
-  resetExpressionResult = () => {
-    if(this.expressionResult){
-      this.clearFunction();
-      this.expressionResult = '';
-    }
-  }
-
-  toggleHistorySidebar = () => {
-    this.isOpenHistorySidebar = !this.isOpenHistorySidebar
-  }
-
   triggerError = () => {
     this.triggerToastMessage()
-    this.expression = '0';
-    this.expressionResult = '';
+    this.resetFunction()
     this.isError = true;
   }
 
@@ -154,10 +151,35 @@ export class CalculatorComponent {
     setTimeout(() => this.triggerToastMessageFlag = false, ERROR_DURATION);
   }
 
+  onHistoryClick = (historyExpression: string, historyResult: string) => {
+    this.cleanError();
+    this.resetFunction();
+    this.expression = historyExpression;
+    this.expressionResult = historyResult;
+
+  }
+
   cleanError = () => {
-    if(!this.isError){
+    if (!this.isError) {
       return;
     }
     this.isError = false;
   }
+  clearFunction = () => {
+    this.cleanError()
+    this.resetFunction()
+    this.resetResultsVars()
+  }
+
+  resetFunction = () => {
+    this.currentNumber = '0';
+    this.justAddedToExpression = false;
+    this.builtExpression = ''
+    this.chosenOperation = '';
+  }
+  resetResultsVars = () => {
+    this.expressionResult = '';
+    this.expression = ''
+  }
+
 }

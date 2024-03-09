@@ -1,1 +1,1 @@
-export const EXPRESSION_VALIDATOR = /^-?\d+(\.\d+)?\s[\+\-\*\/]\s-?\d+(\.\d+)?$/
+export const EXPRESSION_VALIDATOR = /^-?.+?\s*[/\*\+\-]\s*-?.+$/;
